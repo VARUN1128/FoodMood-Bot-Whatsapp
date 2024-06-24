@@ -1,5 +1,4 @@
 # 🍽️ FoodMood-Bot
-# 🍽️ FoodMood-Bot
 
 **FoodMood-Bot** is a WhatsApp bot powered by Flask, Twilio, and OpenAI, developed by HarshitaDS in June 2024. It suggests recipes based on the user's mood, providing brief, easy-to-follow instructions with ingredients and preparation time.
 
