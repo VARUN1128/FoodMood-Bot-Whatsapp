@@ -70,7 +70,7 @@ FoodMood-Bot: "One cannot think well, love well, sleep well, if one has not dine
 
 5. Run the Flask application:
     ```bash
-    flask run
+    python run.py
     ```
 
 ## Usage

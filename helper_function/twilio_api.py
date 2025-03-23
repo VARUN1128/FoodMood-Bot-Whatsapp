@@ -7,8 +7,8 @@ load_dotenv(find_dotenv())
 
 # Find your Account SID and Auth Token at twilio.com/console
 # and set the environment variables. See http://twil.io/secure
-account_sid = os.environ["TWILIO_ACCOUNT_SID"]
-auth_token = os.environ["TWILIO_AUTH_TOKEN"]
+account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
 client = Client(account_sid, auth_token)
 
 def send_twilio_message(message: str, sender_id: str) -> None:
@@ -34,6 +34,15 @@ def send_twilio_photo(message: str, sender_id: str, media_url: str) -> None:
     print(message.sid)
     return None
 
+def send_twilio_template(sender_id: str) -> None:
+    message = client.messages.create(
+        from_='whatsapp:+14155238886',
+        content_sid='HXb5b62575e6e4ff6129ad7c8efe1f983e',
+        content_variables='{"1":"12/1","2":"3pm"}',
+        to=sender_id
+    )
+    print(message.sid)
+    return None
 
 def create_string_chunks(string, length):
     words = string.split()
