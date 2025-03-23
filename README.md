@@ -96,4 +96,3 @@ Developed by HarshitaDS. For any inquiries, please reach out via GitHub.
 ---
 
 Bon Appétit! 🍴
-
