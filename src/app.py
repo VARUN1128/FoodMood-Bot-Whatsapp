@@ -1,8 +1,12 @@
 from flask import Flask, request
+import logging
 
 from helper_function.openai_api import chat_completion, create_image, transcript_audio
 from helper_function.twilio_api import send_twilio_message, send_twilio_photo, create_string_chunks
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -64,29 +68,42 @@ def handle_home():
 
 @app.route('/twilio', methods=['POST'])
 def handle_twilio():
-    data = request.form.to_dict()
-    sender_id = data['From']
-    if 'MediaUrl0' in data.keys():
-        query = transcript_audio(data['MediaUrl0'])
-        response = chat_completion(query)
-        send_twilio_message(response, sender_id)
-    else: 
-        query = data['Body']
-        words = query.split(' ')
-        if words[0] == '/img':
-            query = ' '.join(words[1:])
-            response = create_image(query)
-            send_twilio_photo('Here is your generated image.', sender_id, response)
-        else:
-    #    if words[0] == '/ask':
-            query = ' '.join(words[1:])
+    try:
+        logger.debug("Received webhook request")
+        data = request.form.to_dict()
+        logger.debug(f"Request data: {data}")
+        
+        sender_id = data['From']
+        logger.debug(f"Sender ID: {sender_id}")
+        
+        if 'MediaUrl0' in data.keys():
+            logger.debug("Processing media message")
+            query = transcript_audio(data['MediaUrl0'])
             response = chat_completion(query)
-            
-            if len(response) > 1600:
-                sentences = create_string_chunks(response, 1400)
-                for s in sentences:
-                    send_twilio_message(s, sender_id)
+            send_twilio_message(response, sender_id)
+        else: 
+            query = data['Body']
+            logger.debug(f"Received message: {query}")
+            words = query.split(' ')
+            if words[0] == '/img':
+                logger.debug("Processing image request")
+                query = ' '.join(words[1:])
+                response = create_image(query)
+                send_twilio_photo('Here is your generated image.', sender_id, response)
             else:
-                send_twilio_message(response, sender_id)
+                logger.debug("Processing text message")
+                response = chat_completion(query)
+                logger.debug(f"OpenAI response: {response}")
                 
-    return 'OK', 200
+                if len(response) > 1600:
+                    sentences = create_string_chunks(response, 1400)
+                    for s in sentences:
+                        send_twilio_message(s, sender_id)
+                else:
+                    send_twilio_message(response, sender_id)
+        
+        logger.debug("Successfully processed request")
+        return 'OK', 200
+    except Exception as e:
+        logger.error(f"Error processing request: {str(e)}", exc_info=True)
+        return str(e), 500
