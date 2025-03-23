@@ -91,8 +91,8 @@ This project is licensed under the MIT License.
 
 ## Contact
 
-Developed by HarshitaDS. For any inquiries, please reach out via GitHub.
+Developed by Varun. For any inquiries, please reach out via GitHub.
 
 ---
 
-Bon Appétit! 🍴
+Enjoy ur Meals! 🍴
