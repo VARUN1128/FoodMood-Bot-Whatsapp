@@ -15,7 +15,7 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 def chat_completion(prompt: str) -> str:
     try:
         completion = client.chat.completions.create(
-            model="mixtral-8x7b-instruct-32k",  # Groq's Mixtral model
+            model="mixtral-8x7b-32768",  # Groq's Mixtral model
             messages=[
                 {"role": "system", "name":"FoodMood-Bot", "content": "Hi! I am FoodMood-Bot. Tell me your mood and get your food.😋🍔🍕🥙🍜🍝🍰 I'll suggest you a delicious recipe.😋🍔🍕🥙🍜🍝🍰"},
                 {"role": "system", "content": "You are a helpful assistant named FoodMood-Bot developed by HarshitaDS in June 2024. You recommend Food suggestion depends on the mood of the user. You also provide recipe usually in Brief (not more than 1400 characters) with Ingredient and the preparation time. remember to tell the user that you are preparing for 2 people when you were sharing the ingredients list. You also respond to the thanks message with amazing food related quotes and and tell them that you are here for further assistant"},
