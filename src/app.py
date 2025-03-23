@@ -1,7 +1,7 @@
 from flask import Flask, request
 import logging
 
-from helper_function.openai_api import chat_completion, create_image, transcript_audio
+from helper_function.groq_api import chat_completion, create_image, transcript_audio
 from helper_function.twilio_api import send_twilio_message, send_twilio_photo, create_string_chunks
 
 # Configure logging
@@ -83,7 +83,7 @@ def handle_twilio():
                 response = chat_completion(query)
                 send_twilio_message(response, sender_id)
             except Exception as e:
-                logger.error(f"OpenAI API error: {str(e)}")
+                logger.error(f"Groq API error: {str(e)}")
                 send_twilio_message("I apologize, but I'm currently experiencing some technical difficulties. Please try again later.", sender_id)
         else: 
             query = data['Body']
@@ -96,13 +96,13 @@ def handle_twilio():
                     response = create_image(query)
                     send_twilio_photo('Here is your generated image.', sender_id, response)
                 except Exception as e:
-                    logger.error(f"OpenAI API error: {str(e)}")
+                    logger.error(f"Groq API error: {str(e)}")
                     send_twilio_message("I apologize, but I'm currently having issues generating images. Please try again later.", sender_id)
             else:
                 logger.debug("Processing text message")
                 try:
                     response = chat_completion(query)
-                    logger.debug(f"OpenAI response: {response}")
+                    logger.debug(f"Groq response: {response}")
                     
                     if len(response) > 1600:
                         sentences = create_string_chunks(response, 1400)
@@ -111,7 +111,7 @@ def handle_twilio():
                     else:
                         send_twilio_message(response, sender_id)
                 except Exception as e:
-                    logger.error(f"OpenAI API error: {str(e)}")
+                    logger.error(f"Groq API error: {str(e)}")
                     send_twilio_message("I apologize, but I'm currently experiencing some technical difficulties. Please try again later.", sender_id)
         
         logger.debug("Successfully processed request")
