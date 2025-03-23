@@ -14,7 +14,7 @@ client = Client(account_sid, auth_token)
 def send_twilio_message(message: str, sender_id: str) -> None:
     message = client.messages.create(
         body=message,
-        from_='whatsapp:+14155238886',  # Using the explicit WhatsApp format
+        from_='whatsapp:+14155238886',  # Using the correct WhatsApp format without spaces or parentheses
         to=sender_id
     )
     return None
