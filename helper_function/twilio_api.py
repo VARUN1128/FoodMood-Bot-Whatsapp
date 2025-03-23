@@ -13,13 +13,10 @@ client = Client(account_sid, auth_token)
 
 def send_twilio_message(message: str, sender_id: str) -> None:
     message = client.messages.create(
-        # body="Hello there! " + message ,
-        body= message ,
-        from_=os.getenv('FROM'),
+        body=message,
+        from_='whatsapp:+14155238886',  # Using the explicit WhatsApp format
         to=sender_id
     )
-
-    # print(message.sid)
     return None
 
 # send_twilio_message('hello from the code', "whatsapp:+917982156157")
