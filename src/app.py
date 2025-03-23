@@ -79,8 +79,12 @@ def handle_twilio():
         if 'MediaUrl0' in data.keys():
             logger.debug("Processing media message")
             query = transcript_audio(data['MediaUrl0'])
-            response = chat_completion(query)
-            send_twilio_message(response, sender_id)
+            try:
+                response = chat_completion(query)
+                send_twilio_message(response, sender_id)
+            except Exception as e:
+                logger.error(f"OpenAI API error: {str(e)}")
+                send_twilio_message("I apologize, but I'm currently experiencing some technical difficulties. Please try again later.", sender_id)
         else: 
             query = data['Body']
             logger.debug(f"Received message: {query}")
@@ -88,22 +92,34 @@ def handle_twilio():
             if words[0] == '/img':
                 logger.debug("Processing image request")
                 query = ' '.join(words[1:])
-                response = create_image(query)
-                send_twilio_photo('Here is your generated image.', sender_id, response)
+                try:
+                    response = create_image(query)
+                    send_twilio_photo('Here is your generated image.', sender_id, response)
+                except Exception as e:
+                    logger.error(f"OpenAI API error: {str(e)}")
+                    send_twilio_message("I apologize, but I'm currently having issues generating images. Please try again later.", sender_id)
             else:
                 logger.debug("Processing text message")
-                response = chat_completion(query)
-                logger.debug(f"OpenAI response: {response}")
-                
-                if len(response) > 1600:
-                    sentences = create_string_chunks(response, 1400)
-                    for s in sentences:
-                        send_twilio_message(s, sender_id)
-                else:
-                    send_twilio_message(response, sender_id)
+                try:
+                    response = chat_completion(query)
+                    logger.debug(f"OpenAI response: {response}")
+                    
+                    if len(response) > 1600:
+                        sentences = create_string_chunks(response, 1400)
+                        for s in sentences:
+                            send_twilio_message(s, sender_id)
+                    else:
+                        send_twilio_message(response, sender_id)
+                except Exception as e:
+                    logger.error(f"OpenAI API error: {str(e)}")
+                    send_twilio_message("I apologize, but I'm currently experiencing some technical difficulties. Please try again later.", sender_id)
         
         logger.debug("Successfully processed request")
         return 'OK', 200
     except Exception as e:
         logger.error(f"Error processing request: {str(e)}", exc_info=True)
+        try:
+            send_twilio_message("Sorry, something went wrong. Please try again later.", sender_id)
+        except:
+            pass
         return str(e), 500
